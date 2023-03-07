@@ -1,5 +1,5 @@
 {
-  "name": "multi-personality-chat-gpt-discord-bot",
+  "name": "multi-persona-chatgpt-discordbot",
   "version": "0.1.0",
   "scripts": {
     "prepare": "husky install",

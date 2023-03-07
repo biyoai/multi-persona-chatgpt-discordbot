@@ -1,4 +1,4 @@
-# multi-personality-chat-gpt-discord-bot
+# multi-persona-chatgpt-discordbot
 
 複数の人格を使い分けるChat GPT bot。
 
