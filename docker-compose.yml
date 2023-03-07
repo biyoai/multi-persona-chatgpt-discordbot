@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  redis:
+    # 2023年3月7日現在のRailwayで使われているイメージ https://docs.railway.app/databases/redis
+    image: bitnami/redis:6.0
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/bitnami/redis/data
+
+volumes:
+  redis-data:
