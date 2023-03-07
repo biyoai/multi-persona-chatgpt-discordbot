@@ -256,17 +256,14 @@ function limitMessagesTotalContentLength(
   let left = maxLength;
   // 最新のメッセージから読んでいく
   for (const message of messages.reverse()) {
-    // 重要: アシスタントが意図しないOpenAI人格を使うと、以降はそれに影響されてしまうので、除外する
-    if (message.role === 'user') {
-      const sliced = {
-        ...message,
-        content: message.content.slice(0, left),
-      };
-      filtered.push(sliced);
+    const sliced = {
+      ...message,
+      content: message.content.slice(0, left),
+    };
+    filtered.push(sliced);
 
-      left -= sliced.content.length;
-      if (left <= 0) break;
-    }
+    left -= sliced.content.length;
+    if (left <= 0) break;
   }
   return [
     firstMessage,

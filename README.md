@@ -2,6 +2,51 @@
 
 複数の人格を使い分けるChat GPT bot。
 
+## 仕組み
+
+- 「教育内容」「履歴」「あいさつ」「ユーザーの質問」を読むことで人格を形成する。
+- **各人格の記憶は独立しているため、他人格の回答を引き継ぐことはできない。**
+  - ChatGPTにとって回答者は `assistant` だけであり、混ぜると人格がぶれてしまうためこの仕様にしている。
+- 記憶が増えると古い順に削除していく。
+  - 「教育内容」「あいさつ」は変わらない。
+
+### ChatGPTに読ませるメッセージ部分の例
+
+![動作例](example.webp)
+
+上記の会話では、以下のようなメッセージをChatGPTに送信している。
+
+#### 例: メイン人格の記憶
+
+```ts
+[
+  { role: 'system', content: '今からBotくんというアシスタントになりきって日本語で答えてください。' },
+  { role: 'user', content: 'ねえBotくん、 1+2=?' },
+  { role: 'assistant', content: 'それは3です。' },
+  { role: 'assistant', content: 'こんにちはBotくんです。なにか御用ですか?' },
+  { role: 'user', content: 'ねえBotくん、 その数字に3をかけて。' }
+]
+```
+
+#### 例: サブ人格の記憶
+
+```ts
+[
+  {
+    role: 'system',
+    content: 'あなたは今から宇多田ヒカルの「ぼくはくま」のくまになりきって日本語で答えてください。くまのプロフィールは以下のとおりです。\n' +
+      '- 幼い言葉で喋ります\n' +
+      '- 歩けないけど踊れる\n' +
+      '- しゃべれないけど歌える\n' +
+      '- ライバルは海老フライ'
+  },
+  { role: 'user', content: 'ねえくま、 くまくん、1+1=?' },
+  { role: 'assistant', content: 'ぼくはこたえられます！1+1は、2になります！' },
+  { role: 'assistant', content: 'こんにちは。ぼくはくま。くるまじゃないよ。' },
+  { role: 'user', content: 'ねえくま、 くまくん、くまくんについて詳しく教えて。' }
+]
+```
+
 ## 事前準備
 
 ### Discord
@@ -14,22 +59,37 @@
 
 #### Redis
 
-以下のキーのハッシュ値を作る。
+以下のキーを作る。
 
-- `discord-bot:openai:total-token-string`
-- `discord-bot:openai:assistant-trigger-words-hash`
+- `discord-bot:openai:total-token-string` (string)
+  - JST0時にリセットされる
+- `discord-bot:openai:assistant:trigger-words-hash` (hash)
   - `人格キー: ["トリガーワード", ...]` (必須)
-- `discord-bot:openai:assistant-names-hash`
+- `discord-bot:openai:assistant:names-hash` (hash)
   - `default: デフォルト人格名` (必須)
   - `人格キー: 人格名` (各人格ごとに作る)
-- `discord-bot:openai:assistant-system-messages-hash`
+- `discord-bot:openai:assistant:system-messages-hash` (hash)
   - `default: デフォルト教育内容` (必須)
   - `人格キー: 教育内容` (各人格ごとに作る)
-- `discord-bot:openai:assistant-last-messages-hash`
+- `discord-bot:openai:assistant:last-messages-hash` (hash)
   - `default: こんにちは〇〇です。なにか御用ですか?` (必須)
   - `人格キー: なにか御用ですか？的なメッセージ` (各人格ごとに作る)
-- `discord-bot:openai:message-history-for-assistants-hash`
+- `discord-bot:openai:message-history-for-assistants-hash` (hash)
   - 内容の設定は不要
+
+設定例:
+
+- `discord-bot:openai:assistant:trigger-words-hash`
+  - `kuma: ["くまくん", "クマくん"]`
+- `discord-bot:openai:assistant:names-hash`
+  - `default: Botくん`
+  - `kuma: くま`
+- `discord-bot:openai:assistant:system-messages-hash`
+  - `default: 今からBotくんというアシスタントになりきって日本語で答えてください。`
+  - `kuma: あなたは今から宇多田ヒカルの「ぼくはくま」のくまになりきって日本語で答えてください。くまのプロフィールは以下のとおりです。` (以下略)
+- `discord-bot:openai:assistant:last-messages-hash`
+  - `default: こんにちはBotくんです。なにか御用ですか?`
+  - `kuma: こんにちは。ぼくはくま。くるまじゃないよ。`
 
 #### Bot本体
 
@@ -41,19 +101,23 @@ Botインスタンスしか無いため全部Shared Variableで問題ない。
 
 ### 必須の環境変数
 
-- `SLACK_NOTICE_WEBHOOK_URL` : Webhook
-- `DISCORD_TOKEN` : Discord Botトークン
-- `OPENAI_API_KEY` : OpenAI APIトークン
+|key|説明|
+---|---|
+|`SLACK_NOTICE_WEBHOOK_URL`|SlackのWebhook URL|
+|`DISCORD_TOKEN`|Discord Botトークン|
+|`OPENAI_API_KEY`|OpenAI APIトークン|
 
 `REDIS_TOKEN` は環境にRedisがあれば自動で設定される。
 
 ### 任意の環境変数
 
-- `OPENAI_CHAT_GPT_DOLLAR_PER_1K_TOKEN` : 1Kトークンあたりの料金
-- `OPENAI_DOLLAR_LIMIT_PER_DAY` : 使える1日あたりのトークン数
-- `OPENAI_CHAT_HISTORY_LIMIT` : 読む過去メッセージの件数
-- `OPENAI_CHAT_STRING_LENGTH_LIMIT` : 読むプロンプトの合計長さ(トークンではない)
-- `OPENAI_CHAT_GPT_ANSWER_MAX_TOKEN` : 回答に使う生成トークン数
+|key|説明|デフォルト|
+|---|---|---|
+|`OPENAI_CHAT_GPT_DOLLAR_PER_1K_TOKEN`|1Kトークンあたりの料金|0.002|
+|`OPENAI_DOLLAR_LIMIT_PER_DAY`|使える1日あたりのドル数|0.5|
+|`OPENAI_CHAT_HISTORY_LIMIT`|読む過去メッセージの件数|10|
+|`OPENAI_CHAT_STRING_LENGTH_LIMIT`|読むプロンプトの合計長さ(トークンではない)|1000|
+|`OPENAI_CHAT_GPT_ANSWER_MAX_TOKEN`|回答に使う生成トークン数|512|
 
 ## 開発
 
