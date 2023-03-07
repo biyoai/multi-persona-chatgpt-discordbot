@@ -22,10 +22,10 @@ const redisKeysConfig = {
 } as const;
 export const RedisKeysMap = createRedisKeysMap(redisKeysConfig);
 
-/**
- * ここでcatchすると無限にリトライしてしまうっぽい
- * @see https://github.com/luin/ioredis/issues/1146
- */
 export function getRedisClient() {
+  /**
+   * ここでcatchすると無限にリトライしてしまうっぽい
+   * @see https://github.com/luin/ioredis/issues/1146
+   */
   return new Redis(safeEnv.REDIS_URL);
 }

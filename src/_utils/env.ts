@@ -4,6 +4,7 @@ dotenv.config();
 
 export const safeEnv = envsafe(
   {
+    /** Railwayでは自動設定される */
     REDIS_URL: str(),
     /** Slack webhook URL */
     SLACK_NOTICE_WEBHOOK_URL: str(),

@@ -125,8 +125,7 @@ railway link
 
 ```sh
 docker compose up -d
-railway run yarn build
-railway run yarn start
+yarn dev
 ```
 
 紛らわしいが、リンクしたRailway環境が`production`でも、ローカルではローカルの`.env`を使う。

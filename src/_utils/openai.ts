@@ -1,11 +1,11 @@
-import { ClientUser, Message as DiscordMessage } from 'discord.js';
+import type { ClientUser, Message as DiscordMessage } from 'discord.js';
 import {
   Configuration,
   ChatCompletionRequestMessage as Message,
   CreateCompletionResponseUsage,
   OpenAIApi,
 } from 'openai';
-import { Redis } from 'ioredis';
+import type { Redis } from 'ioredis';
 import { safeEnv } from './env';
 import {
   CHAT_GPT_PARAMS,
@@ -91,7 +91,7 @@ async function incrementTotalTokenCount(
   await redis
     .incrby(totalTokenCountRedisKey, tokenCountUsed)
     .then(() => {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         console.info(`ChatGPT使用トークンのカウント追加: ${tokenCountUsed}`);
       }
     })
@@ -151,8 +151,8 @@ export async function getAssistantTypeOnRedis(
   const triggerWordsMap = await redis.hgetall(assistantTriggerWordsRedisKey);
   let assistantKey = DEFAULT_ASSISTANT_NAME;
   if (Object.keys(triggerWordsMap).length > 0) {
-    for (const key in triggerWordsMap) {
-      const words = JSON.parse(triggerWordsMap[key]) as string[];
+    for (const [key, value] of Object.entries(triggerWordsMap)) {
+      const words = JSON.parse(value) as string[];
       if (
         words.length &&
         words.some((word) => discordMessage.cleanContent.includes(word))
@@ -250,7 +250,7 @@ function limitMessagesTotalContentLength(
     firstMessage.content.length -
     lastMessage.content.length -
     MAX_PROMPT_LENGTH;
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     console.info(`Length remaining: ${maxLength}`);
   }
   let left = maxLength;
@@ -339,7 +339,7 @@ export async function replyChatGPTAnswer(
                 promptMessage
               );
 
-            if (process.env.NODE_ENV === 'development') {
+            if (process.env['NODE_ENV'] === 'development') {
               const totalContentLength = messagesForCompletion.reduce(
                 (prev, cur) => {
                   return prev + cur.content.length;
@@ -378,7 +378,7 @@ export async function replyChatGPTAnswer(
                 );
               // choicesは`n`指定なしだと1個が上限
               const firstChoice = data.choices[0];
-              const answer = firstChoice.message?.content ?? '';
+              const answer = firstChoice?.message?.content ?? '';
 
               /** 回答メッセージ */
               const answerMessage: Message = {
@@ -389,7 +389,7 @@ export async function replyChatGPTAnswer(
               message.react('✅');
               message.reply({
                 content: `${
-                  data.choices[0].message?.content ?? ''
+                  data.choices[0]?.message?.content ?? ''
                 }${additionalText}`,
               });
 

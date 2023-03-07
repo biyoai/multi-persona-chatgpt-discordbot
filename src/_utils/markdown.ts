@@ -1,6 +1,11 @@
 export function markdownCode(
   string: string | unknown,
-  { inline }: { inline?: boolean } = {}
+  {
+    inline,
+  }: {
+    /** インラインコードならtrue */
+    inline?: boolean;
+  } = {}
 ) {
   return inline ? `\`${string}\`` : `\`\`\`\n${string}\n\`\`\``;
 }

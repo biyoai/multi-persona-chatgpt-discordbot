@@ -4,9 +4,9 @@ import {
   Elements,
   SlackMessageDto,
 } from 'slack-block-builder';
-import { ChatCompletionRequestMessage } from 'openai';
+import type { ChatCompletionRequestMessage } from 'openai';
 import { markdownCode } from './markdown';
-import { User } from 'discord.js';
+import type { User } from 'discord.js';
 import { safeEnv } from './env';
 
 async function notifyToSlack(message: SlackMessageDto) {

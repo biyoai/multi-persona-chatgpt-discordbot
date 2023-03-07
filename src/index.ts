@@ -65,7 +65,8 @@ client.once(Events.ClientReady, async (c) => {
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot || message.content.startsWith('!')) {
+  // bot無視
+  if (message.author.bot) {
     return;
   }
   if (client.user) {

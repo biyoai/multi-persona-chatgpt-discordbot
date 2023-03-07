@@ -1,4 +1,4 @@
-import { CreateChatCompletionRequest } from 'openai';
+import type { CreateChatCompletionRequest } from 'openai';
 import { safeEnv } from './env';
 
 export const MAX_PROMPT_LENGTH = 200;
