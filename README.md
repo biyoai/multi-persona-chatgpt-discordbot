@@ -100,8 +100,7 @@ Botインスタンスしか無いため全部Shared Variableで問題ない。
 ### 必須の環境変数
 
 |key|説明|
----|---|
-|`SLACK_NOTICE_WEBHOOK_URL`|SlackのWebhook URL|
+|---|---|
 |`DISCORD_TOKEN`|Discord Botトークン|
 |`OPENAI_API_KEY`|OpenAI APIトークン|
 

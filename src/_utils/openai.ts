@@ -13,7 +13,6 @@ import {
   MAX_PROMPT_LENGTH,
 } from './config';
 import { RedisKeysMap, getRedisClient } from './redis';
-import { notifyErrorToSlack, notifyNewMessageToSlack } from './slack';
 import { markdownCode } from './markdown';
 
 const openAiRedisKeys = RedisKeysMap.discordBot.openai;
@@ -194,15 +193,6 @@ export async function getAssistantTypeOnRedis(
       },
     };
   } else {
-    if (assistantKey === DEFAULT_ASSISTANT_NAME) {
-      await notifyErrorToSlack(
-        `デフォルト人格について、人格形成用の項目が設定されていません`
-      );
-    } else {
-      await notifyErrorToSlack(
-        `${assistantKey}のトリガーワードは設定されていますが、その他の項目が設定されていません`
-      );
-    }
     return null;
   }
 }
@@ -223,10 +213,6 @@ async function createChatCompletion(
     })
     .catch(async (e) => {
       console.error(e.response ? e.response.data : e);
-      await notifyErrorToSlack(
-        e.response ? e.response.data : e,
-        'OpenAI APIの問い合わせでエラーが発生しました。'
-      );
       return null;
     });
 }
@@ -410,15 +396,9 @@ export async function replyChatGPTAnswer(
                 answerMessage,
               ]);
               await incrementTotalTokenCount(redis, usage);
-
-              await notifyNewMessageToSlack(
-                [promptMessage, answerMessage],
-                message.author,
-                additionalText
-              );
             } else {
               // レスポンスが正常でない場合
-              message.reply('(エラー: 回答生成に失敗');
+              message.reply('(エラー: 回答生成に失敗)');
             }
 
             return;
@@ -431,7 +411,6 @@ export async function replyChatGPTAnswer(
     }
   } catch (e: unknown) {
     message.reply('(エラー: 処理失敗)');
-    await notifyErrorToSlack(e);
     return;
   }
 }

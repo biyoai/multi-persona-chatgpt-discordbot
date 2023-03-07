@@ -1,10 +1,6 @@
 import cron from 'node-cron';
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { getRedisClient, RedisKeysMap } from '@/_utils/redis';
-import {
-  notifyErrorToSlack,
-  notifyTokenCountResetToSlack,
-} from '@/_utils/slack';
 import { safeEnv } from '@/_utils/env';
 import { replyChatGPTAnswer } from '@/_utils/openai';
 import { CHAT_GPT_PARAMS } from '@/_utils/config';
@@ -24,7 +20,6 @@ cron.schedule(
     const redis = getRedisClient();
     if (redis) {
       await redis.set(totalTokenCountRedisKey, 0).then(async () => {
-        await notifyTokenCountResetToSlack();
         console.log('Reset token limit');
       });
     }
@@ -37,10 +32,6 @@ cron.schedule(
 client.once(Events.ClientReady, async (c) => {
   const redis = getRedisClient();
   redis.on('error', async (e) => {
-    await notifyErrorToSlack(
-      e,
-      'Discordにログインできましたが、Redisに接続できません'
-    );
     // ここで失敗したら何か間違っているので終了する
     throw new Error(e);
   });
