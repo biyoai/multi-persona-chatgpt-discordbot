@@ -21,10 +21,9 @@
 ```ts
 [
   { role: 'system', content: '今からBotくんというアシスタントになりきって日本語で答えてください。' },
-  { role: 'user', content: 'ねえBotくん、 1+2=?' },
-  { role: 'assistant', content: 'それは3です。' },
+  // ここに今までの会話
   { role: 'assistant', content: 'こんにちはBotくんです。なにか御用ですか?' },
-  { role: 'user', content: 'ねえBotくん、 その数字に3をかけて。' }
+  { role: 'user', content: 'ねえBotくん、 1+2=?' },
 ]
 ```
 
@@ -40,8 +39,7 @@
       '- しゃべれないけど歌える\n' +
       '- ライバルは海老フライ'
   },
-  { role: 'user', content: 'ねえくま、 くまくん、1+1=?' },
-  { role: 'assistant', content: 'ぼくはこたえられます！1+1は、2になります！' },
+  // ここに今までの会話
   { role: 'assistant', content: 'こんにちは。ぼくはくま。くるまじゃないよ。' },
   { role: 'user', content: 'ねえくま、 くまくん、くまくんについて詳しく教えて。' }
 ]
