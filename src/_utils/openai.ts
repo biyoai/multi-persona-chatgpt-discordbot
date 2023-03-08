@@ -90,7 +90,7 @@ async function incrementTotalTokenCount(
   await redis
     .incrby(totalTokenCountRedisKey, tokenCountUsed)
     .then(() => {
-      if (process.env['NODE_ENV'] === 'development') {
+      if (process.env.NODE_ENV === 'development') {
         console.info(`ChatGPT使用トークンのカウント追加: ${tokenCountUsed}`);
       }
     })
@@ -236,7 +236,7 @@ function limitMessagesTotalContentLength(
     firstMessage.content.length -
     lastMessage.content.length -
     MAX_PROMPT_LENGTH;
-  if (process.env['NODE_ENV'] === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     console.info(`Length remaining: ${maxLength}`);
   }
   let left = maxLength;
@@ -325,7 +325,7 @@ export async function replyChatGPTAnswer(
                 promptMessage
               );
 
-            if (process.env['NODE_ENV'] === 'development') {
+            if (process.env.NODE_ENV === 'development') {
               const totalContentLength = messagesForCompletion.reduce(
                 (prev, cur) => {
                   return prev + cur.content.length;

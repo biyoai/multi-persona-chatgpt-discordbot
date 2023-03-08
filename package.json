@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "prepare": "husky install",
-    "dev": "concurrently 'yarn watch' 'nodemon dist/index.ts --watch \"./dist/**\" --ext js'",
+    "dev": "concurrently 'yarn watch' 'NODE_ENV=development nodemon dist/index.js --watch \"./dist/**\" --ext js'",
     "start": "node ./dist/index.js",
     "watch": "rollup -cw --configPlugin typescript",
     "lint": "eslint '**/*.{js,ts}'",
