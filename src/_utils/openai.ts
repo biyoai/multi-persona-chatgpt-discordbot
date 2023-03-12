@@ -1,4 +1,4 @@
-import type { ClientUser, Message as DiscordMessage } from 'discord.js';
+import { ChannelType, ClientUser, Message as DiscordMessage } from 'discord.js';
 import {
   Configuration,
   ChatCompletionRequestMessage as Message,
@@ -271,6 +271,9 @@ export async function replyChatGPTAnswer(
   clientUser: ClientUser,
   message: DiscordMessage
 ) {
+  if (message.channel.type === ChannelType.GuildText) {
+    message.channel.sendTyping();
+  }
   const perfStart = performance.now();
   try {
     const redis = getRedisClient();
@@ -400,7 +403,6 @@ export async function replyChatGPTAnswer(
               // レスポンスが正常でない場合
               message.reply('(エラー: 回答生成に失敗)');
             }
-
             return;
           }
         }
