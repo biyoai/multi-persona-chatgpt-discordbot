@@ -1,6 +1,6 @@
-import { envsafe, num, str } from 'envsafe';
-import dotenv from 'dotenv';
-dotenv.config();
+import { envsafe, num, str } from 'envsafe'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const safeEnv = envsafe(
   {
@@ -34,4 +34,4 @@ export const safeEnv = envsafe(
   {
     strict: true,
   }
-);
+)

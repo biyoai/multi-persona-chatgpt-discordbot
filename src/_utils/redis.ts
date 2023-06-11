@@ -1,6 +1,6 @@
-import { Redis } from 'ioredis';
-import { createRedisKeysMap } from 'create-redis-key';
-import { safeEnv } from './env';
+import { Redis } from 'ioredis'
+import { createRedisKeysMap } from 'create-redis-key'
+import { safeEnv } from './env'
 
 const redisKeysConfig = {
   SCOPE_FIRST_PART: [],
@@ -19,13 +19,13 @@ const redisKeysConfig = {
       messageHistoryForAssistantsHash: ['message-history-for-assistants-hash'],
     },
   },
-} as const;
-export const RedisKeysMap = createRedisKeysMap(redisKeysConfig);
+} as const
+export const RedisKeysMap = createRedisKeysMap(redisKeysConfig)
 
 export function getRedisClient() {
   /**
    * ここでcatchすると無限にリトライしてしまうっぽい
    * @see https://github.com/luin/ioredis/issues/1146
    */
-  return new Redis(safeEnv.REDIS_URL);
+  return new Redis(safeEnv.REDIS_URL)
 }

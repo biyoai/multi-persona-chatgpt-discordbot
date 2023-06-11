@@ -1,19 +1,19 @@
-import * as fs from 'fs';
-import typescript from '@rollup/plugin-typescript';
-import terser from '@rollup/plugin-terser';
-import { RollupOptions } from 'rollup';
+import * as fs from 'fs'
+import typescript from '@rollup/plugin-typescript'
+import terser from '@rollup/plugin-terser'
+import { RollupOptions } from 'rollup'
 
 /**
  * @see https://github.com/js-cookie/js-cookie/blob/main/rollup.config.mjs
  */
 const loadJSON = (path: string) =>
-  JSON.parse(fs.readFileSync(new URL(path, import.meta.url)).toString());
+  JSON.parse(fs.readFileSync(new URL(path, import.meta.url)).toString())
 
-const pkg = loadJSON('./package.json');
+const pkg = loadJSON('./package.json')
 const external = [
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.devDependencies || {}),
-];
+]
 
 const config: RollupOptions[] = [
   {
@@ -33,5 +33,5 @@ const config: RollupOptions[] = [
     ],
     external,
   },
-];
-export default config;
+]
+export default config

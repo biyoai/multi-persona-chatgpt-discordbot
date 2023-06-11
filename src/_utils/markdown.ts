@@ -4,8 +4,8 @@ export function markdownCode(
     inline,
   }: {
     /** インラインコードならtrue */
-    inline?: boolean;
+    inline?: boolean
   } = {}
 ) {
-  return inline ? `\`${string}\`` : `\`\`\`\n${string}\n\`\`\``;
+  return inline ? `\`${string}\`` : `\`\`\`\n${string}\n\`\`\``
 }
